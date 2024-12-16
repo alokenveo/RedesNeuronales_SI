@@ -1,3 +1,13 @@
+#Evitar avisos de Keras y TensorFlow sobre la utilización de OneDNN
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 # Importar TensorFlow
 import tensorflow as tf
 import numpy as np

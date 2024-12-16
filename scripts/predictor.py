@@ -1,4 +1,10 @@
-#Evitar avisos de TensorFlow sobre la utilización de OneDNN
+#Evitar avisos de Keras y TensorFlow
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
@@ -6,35 +12,20 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 # 2. Cargar el dataset
-print("Cargando el dataset California Housing...")
-housing = fetch_california_housing()
-
-# Convertir el dataset en un DataFrame de pandas
-df = pd.DataFrame(housing.data, columns=housing.feature_names)
-df['PRICE'] = housing.target  # Añadir la columna de precios de las casas
-
-# 3. Exploración del Dataset
-print("\nPrimeras filas del dataset:")
-print(df.head())
-
-print("\nEstadísticas descriptivas:")
-print(df.describe())
-
-# Verificar valores nulos
-print("\nVerificación de valores nulos:")
-print(df.isnull().sum())
+print("Cargando el dataset Boston Housing...")
+data_url = "http://lib.stat.cmu.edu/datasets/boston"
+raw_df = pd.read_csv(data_url, sep="\s+", skiprows=22, header=None)
 
 # 4. Preprocesamiento de los Datos
 # Normalizar las características numéricas
 scaler = StandardScaler()
-X = df.drop(columns=['PRICE'])
-y = df['PRICE']
+X = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :2]])
+y = raw_df.values[1::2, 2]
 
 # Normalizar las características de entrada
 X_scaled = scaler.fit_transform(X)
@@ -68,7 +59,7 @@ predictions = model.predict(X_test)
 # Comparar las predicciones con los valores reales
 print("\nComparación de los valores reales con las predicciones:")
 for i in range(10):
-    print(f"Real: {y_test.iloc[i]:.2f}, Predicho: {predictions[i][0]:.2f}")
+    print(f"Real: {y_test[i]:.2f}, Predicho: {predictions[i][0]:.2f}")
 
 # 8. Generar Métricas
 from sklearn.metrics import mean_squared_error, r2_score
